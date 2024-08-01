@@ -2,6 +2,7 @@ package beyond.myfavoirtebook.post.service;
 
 
 import beyond.myfavoirtebook.member.domain.Member;
+import beyond.myfavoirtebook.member.repository.MemberRepository;
 import beyond.myfavoirtebook.member.service.MemberService;
 import beyond.myfavoirtebook.post.domain.Post;
 import beyond.myfavoirtebook.post.dto.PostDetResDto;
@@ -23,18 +24,22 @@ import java.time.format.DateTimeFormatter;
 public class PostService {
 	private final PostRepository postRepository;
 	private final MemberService memberService;
+	private final MemberRepository memberRepository;
 
 
 	@Autowired
-	PostService(PostRepository postRepository, MemberService memberService) {
+	public PostService(PostRepository postRepository, MemberService memberService, MemberRepository memberRepository) {
 		this.postRepository = postRepository;
 		this.memberService = memberService;
+		this.memberRepository = memberRepository;
 	}
+
+
 
 	public Post postCreate(PostSaveReqDto dto) {
 
 		String email = SecurityContextHolder.getContext().getAuthentication().getName();
-		Member member = memberService.memberFindByEmail(email);
+		Member member = memberRepository.findByEmail(email).orElseThrow(()-> new EntityNotFoundException("member is not found"));
 
 		System.out.println(dto);
 		Post post = postRepository.save(dto.toEntity(member));

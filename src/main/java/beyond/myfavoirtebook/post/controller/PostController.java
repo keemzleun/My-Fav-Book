@@ -30,16 +30,16 @@ public class PostController {
 	}
 
 	@PostMapping("/post/register")
-	public ResponseEntity<?> postCreate(PostSaveReqDto dto) {
+	public ResponseEntity<?> postCreate(@RequestBody PostSaveReqDto dto) {
 		Post post = postService.postCreate(dto);
-		return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "login is successful", post), HttpStatus.CREATED);
+		return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "post is successfully created", post.getId()), HttpStatus.CREATED);
 	}
 
 	// 	조회
 	@GetMapping("/post/list")
 	public ResponseEntity<?> postList(@PageableDefault(size=10, sort="createdTime", direction = Sort.Direction.DESC) Pageable pageable) {
 		Page<PostListResDto> posts = postService.postList(pageable);
-		return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "login is successful", posts), HttpStatus.OK);
+		return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "postlist is sucessfully found", posts), HttpStatus.OK);
 	}
 
 	@GetMapping("post/list/page")
