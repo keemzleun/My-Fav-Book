@@ -1,8 +1,7 @@
 package beyond.myfavoirtebook.common.service;
 
-
 import beyond.myfavoirtebook.member.domain.Role;
-import beyond.myfavoirtebook.member.dto.MemberReqDto;
+import beyond.myfavoirtebook.member.dto.MemberSaveReqDto;
 import beyond.myfavoirtebook.member.repository.MemberRepository;
 import beyond.myfavoirtebook.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ public class InitialDataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if(memberRepository.findByEmail("admin@naver.com").isEmpty()){
-            memberService.memberCreate(MemberReqDto.builder()
+            memberService.memberCreate(MemberSaveReqDto.builder()
                     .name("admin")
                     .email("admin@naver.com")
                     .password("12341234")

@@ -1,8 +1,10 @@
 package beyond.myfavoirtebook.post.controller;
 
+import beyond.myfavoirtebook.common.dto.CommonResDto;
+import beyond.myfavoirtebook.post.domain.Post;
+import beyond.myfavoirtebook.post.dto.PostDetResDto;
 import beyond.myfavoirtebook.post.dto.PostListResDto;
 import beyond.myfavoirtebook.post.dto.PostSaveReqDto;
-import beyond.myfavoirtebook.post.dto.PostUpdateDto;
 import beyond.myfavoirtebook.post.service.PostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,66 +12,50 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @Slf4j
 public class PostController {
 
-    private final PostService postService;
+	private final PostService postService;
 
-    @Autowired
+	@Autowired
     PostController(PostService postService) {
-        this.postService = postService;
-    }
+		this.postService = postService;
+	}
 
-    // 	생성
-    @GetMapping("/post/register")
-    public String postCreateScreen(){
-        return "post/post_register";
-    }
-    @PostMapping("/post/register")
-    public String postCreate(@ModelAttribute PostSaveReqDto dto) {
-        postService.postCreate(dto);
-        return "redirect:/post/list";
-    }
+	@PostMapping("/post/register")
+	public ResponseEntity<?> postCreate(PostSaveReqDto dto) {
+		Post post = postService.postCreate(dto);
+		return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "login is successful", post), HttpStatus.CREATED);
+	}
 
-    // 	조회
-    @GetMapping("/post/list")
-    public String postList(Model model, @PageableDefault(size=10, sort="createdTime", direction = Sort.Direction.DESC) Pageable pageable) {
-        model.addAttribute("postList", postService.postList(pageable));
-        return "post/post_list";
-    }
+	// 	조회
+	@GetMapping("/post/list")
+	public ResponseEntity<?> postList(@PageableDefault(size=10, sort="createdTime", direction = Sort.Direction.DESC) Pageable pageable) {
+		Page<PostListResDto> posts = postService.postList(pageable);
+		return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "login is successful", posts), HttpStatus.OK);
+	}
 
-    @GetMapping("post/list/page")
-    @ResponseBody
-    // Pageable 요청 방법: Localhost:/8080/post/list/page?size=10&page=0  -> 데이터 바인딩
-    public Page<PostListResDto> postListPage(@PageableDefault(size=10, sort="createdTime", direction = Sort.Direction.DESC) Pageable pageable){
-        return postService.postListPage(pageable);
+	@GetMapping("post/list/page")
+	// Pageable 요청 방법: Localhost:/8080/post/list/page?size=10&page=0  -> 데이터 바인딩
+	public Page<PostListResDto> postListPage(@PageableDefault(size=10, sort="createdTime", direction = Sort.Direction.DESC) Pageable pageable){
+		return postService.postListPage(pageable);
 
-    }
+	}
 
-    @GetMapping("/post/detail/{id}")
-    public String postDetail(@PathVariable Long id, Model model){
+	@GetMapping("/post/detail/{id}")
+	public ResponseEntity<?> postDetail(@PathVariable Long id){
 //		log.info("get 요청 & parameter = " + id);
 //		log.info("method명 : postList");
-        model.addAttribute("post", postService.postDetail(id));
-        return "post/post_detail";
-    }
+		PostDetResDto dto = postService.postDetail(id);
+		return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "login is successful", dto), HttpStatus.OK);
+	}
 
-    @GetMapping("/post/delete/{id}")
-    public String postDelete(@PathVariable Long id, Model model){
-        postService.delete(id);
-        return "redirect:/post/list";
-    }
-
-    @PostMapping("/post/update/{id}")
-    public String postUpdate(@PathVariable Long id, @ModelAttribute PostUpdateDto dto, Model model){
-        postService.update(id, dto);
-        return "redirect:/post/detail/" + id;
-    }
 
 }
-

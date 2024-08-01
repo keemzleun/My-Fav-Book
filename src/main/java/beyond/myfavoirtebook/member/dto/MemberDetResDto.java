@@ -2,6 +2,7 @@ package beyond.myfavoirtebook.member.dto;
 
 import beyond.myfavoirtebook.member.domain.Member;
 import beyond.myfavoirtebook.member.domain.Role;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

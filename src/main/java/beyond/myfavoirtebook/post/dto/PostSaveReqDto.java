@@ -17,9 +17,6 @@ public class PostSaveReqDto {
 	private String title;
 	private String contents;
 
-//	private String email;	// 추후 로그인 기능 이후에는 없어질 dto
-
-
 	public Post toEntity(Member member){
 		return Post.builder()
 			.title(this.title)

@@ -4,10 +4,7 @@ import beyond.myfavoirtebook.common.auth.JwtTokenProvider;
 import beyond.myfavoirtebook.common.dto.CommonErrorDto;
 import beyond.myfavoirtebook.common.dto.CommonResDto;
 import beyond.myfavoirtebook.member.domain.Member;
-import beyond.myfavoirtebook.member.dto.MemberLoginDto;
-import beyond.myfavoirtebook.member.dto.MemberRefreshDto;
-import beyond.myfavoirtebook.member.dto.MemberReqDto;
-import beyond.myfavoirtebook.member.dto.MemberResDto;
+import beyond.myfavoirtebook.member.dto.*;
 import beyond.myfavoirtebook.member.service.MemberService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -19,7 +16,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -44,7 +44,7 @@ public class MemberController {
     }
 
     @PostMapping("/member/create")
-    public ResponseEntity<?> createMember(@Valid @RequestBody MemberReqDto dto){
+    public ResponseEntity<?> createMember(@Valid @RequestBody MemberSaveReqDto dto){
         Member member = memberService.memberCreate(dto);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "member is successfully created", member.getId()), HttpStatus.CREATED);
 
@@ -54,15 +54,14 @@ public class MemberController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/member/list")
     public ResponseEntity<Object> memberList(Pageable pageable){
-        Page<MemberResDto> dtos = memberService.memberList(pageable);
+        Page<MemberDetResDto> dtos = memberService.memberList(pageable);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "members are found", dtos), HttpStatus.OK);
     }
-
 
     // todo ) 본인은 본인 회원 정보만 조회 가능
     @GetMapping("/member/myInfo")
     public ResponseEntity<?> myInfo(){
-        MemberResDto dto = memberService.myInfo();
+        MemberDetResDto dto = memberService.myInfo();
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "member is found", dto), HttpStatus.OK);
     }
 
